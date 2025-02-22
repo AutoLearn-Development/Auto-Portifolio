@@ -4,6 +4,11 @@ out/
 !**/src/test/**/out/
 .idea/
 
+## Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+
 ### VS Code ###
 .vscode/
 
