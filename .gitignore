@@ -1,3 +1,17 @@
+### IntelliJ IDEA ###
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+.idea/
+
+## Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+
+### VS Code ###
+.vscode/
+
 # Compiled class file
 *.class
 
