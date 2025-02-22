@@ -8,5 +8,8 @@ fun main() {
     val userData: User = apiService.getUserData()
     val repData: List<Repository> = apiService.getAllRepositoryData()
 
-    println(repData)
+    repData.forEach {
+        apiService.getREADME(it)
+    }
+
 }

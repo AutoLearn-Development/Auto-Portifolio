@@ -11,19 +11,17 @@ import java.net.http.HttpResponse
 
 class ApiService(
     val user: String
-){
+) {
     private val client: HttpClient = HttpClient.newHttpClient()
 
     private val gson = Gson()
 
-    fun getUserData(): User{
-        val uri : URI = URI.create("https://api.github.com/users/$user")
-
+    private fun sendRequisition(uri: URI): String {
         val request = HttpRequest.newBuilder()
             .uri(uri).build()
 
         var response: HttpResponse<String>? = null
-        val requisition = runCatching {response = client.send(request, HttpResponse.BodyHandlers.ofString())}
+        val requisition = runCatching { response = client.send(request, HttpResponse.BodyHandlers.ofString()) }
 
         requisition.onFailure {
             throw IllegalArgumentException("Não foi possível se conectar com github")
@@ -31,33 +29,38 @@ class ApiService(
 
 
         if (response?.statusCode() != 200) {
-            throw IllegalArgumentException("Não foi possível encontrar dados deste usuário")
+            throw IllegalArgumentException("Erro de requisicção: ${response?.statusCode()}")
         }
 
-        val responseBody = response!!.body()
+        // Thread.sleep(2000) // para reduzir tempo entre requisições
+
+        return response!!.body()
+    }
+
+    fun getUserData(): User {
+        val uri: URI = URI.create("https://api.github.com/users/$user")
+        val responseBody: String = sendRequisition(uri)
+
         return gson.fromJson(responseBody, User::class.java)
     }
 
-    fun getAllRepositoryData(): List<Repository>{
-        val uri : URI = URI.create("https://api.github.com/users/$user/repos")
+    fun getAllRepositoryData(): List<Repository> {
+        val uri: URI = URI.create("https://api.github.com/users/$user/repos")
+        val responseBody: String = sendRequisition(uri)
 
-        val request = HttpRequest.newBuilder()
-            .uri(uri).build()
+        val listType = object : TypeToken<List<Repository>>() {}.type
 
-        var response: HttpResponse<String>? = null
-        val requisition = runCatching {response = client.send(request, HttpResponse.BodyHandlers.ofString())}
-
-        requisition.onFailure {
-            throw IllegalArgumentException("Não foi possível se conectar com github")
-        }
-
-
-        if (response?.statusCode() != 200) {
-            throw IllegalArgumentException("Não foi possível encontrar repositórios publicos deste usuário")
-        }
-
-        val responseBody = response!!.body()
-        val listType = object : TypeToken<List<Repository>>(){}.type
         return gson.fromJson(responseBody, listType)
+    }
+
+    fun getREADME(repository: Repository) {
+        val uri: URI = URI.create("https://raw.githubusercontent.com/$user/${repository.name}/main/README.md")
+        try {
+            val responseBody: String = sendRequisition(uri)
+            repository.readmeContent = responseBody
+
+        } catch (e: IllegalArgumentException) {
+            return
+        }
     }
 }
