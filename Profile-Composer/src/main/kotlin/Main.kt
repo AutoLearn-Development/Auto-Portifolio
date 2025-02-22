@@ -1,15 +1,15 @@
-import api.ApiService
+import api.GitHubApiService
 import models.Repository
 import models.User
 
 fun main() {
-    val apiService = ApiService("Gus1331")
+    val gitHubApiService = GitHubApiService("Gus1331")
 
-    val userData: User = apiService.getUserData()
-    val repData: List<Repository> = apiService.getAllRepositoryData()
+    val userData: User = gitHubApiService.getUserData()
+    val repData: List<Repository> = gitHubApiService.getAllRepositoryData()
 
     repData.forEach {
-        apiService.getREADME(it)
+        gitHubApiService.getREADME(it)
     }
 
 }

@@ -9,7 +9,7 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-class ApiService(
+class GitHubApiService(
     val user: String
 ) {
     private val client: HttpClient = HttpClient.newHttpClient()
